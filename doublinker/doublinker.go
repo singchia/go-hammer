@@ -4,7 +4,7 @@ import "sync"
 
 /*
 *	I was trying to put Channel and Handler into doubnode,
-*	but those should belong to buiness data, should be
+*	but those should belong to business data, should be
 *	done at application layer
 **/
 
