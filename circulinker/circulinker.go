@@ -1,6 +1,9 @@
 package circulinker
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
 
 type CircuID *circunode
 
@@ -43,7 +46,7 @@ func (c *Circulinker) Add(data interface{}) CircuID {
 
 }
 
-func (c *Circulinker) Delete(id CircuID) bool {
+func (c *Circulinker) Delete(id CircuID) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -54,7 +57,7 @@ func (c *Circulinker) Delete(id CircuID) bool {
 		c.head, c.tail = nil, nil
 		c.cur = nil
 		c.length--
-		return true
+		return nil
 	}
 
 	if node == c.head {
@@ -64,7 +67,7 @@ func (c *Circulinker) Delete(id CircuID) bool {
 			c.cur = c.cur.next
 		}
 		c.length--
-		return true
+		return nil
 	}
 	itor = c.head
 
@@ -83,11 +86,11 @@ func (c *Circulinker) Delete(id CircuID) bool {
 			}
 			itor.next = nextItor.next
 			c.length--
-			return true
+			return nil
 		}
 		itor = itor.next
 	}
-	return false
+	return errors.New("no such node")
 
 }
 
@@ -119,14 +122,14 @@ func (c *Circulinker) RetrieveCur() interface{} {
 	return node.data
 
 }
-func (c *Circulinker) Rightshift() bool {
+func (c *Circulinker) Rightshift() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	if c.length == 0 {
-		return false
+		return errors.New("empty linker")
 	}
 	c.cur = c.cur.next
-	return true
+	return nil
 }
 
 type ForeachFunc func(id CircuID) error

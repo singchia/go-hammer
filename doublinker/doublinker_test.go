@@ -15,7 +15,7 @@ func Init(t *testing.T) {
 }
 
 func ShowDetails(id DoubID) error {
-	node := (*Doubnode)(id)
+	node := (*doubnode)(id)
 	gt.Logf("%p, %p, %p, %v", node, node.prev, node.next, node.data)
 	return nil
 }

@@ -1,6 +1,9 @@
 package doublinker
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
 
 /*
 *	I was trying to put Channel and Handler into doubnode,
@@ -48,9 +51,9 @@ func (d *Doublinker) Add(data interface{}) DoubID {
 	return node
 }
 
-func (d *Doublinker) Delete(id DoubID) bool {
+func (d *Doublinker) Delete(id DoubID) error {
 	if id == nil {
-		return false
+		return errors.New("id empty")
 	}
 	node := (*doubnode)(id)
 	d.mutex.Lock()
@@ -59,38 +62,38 @@ func (d *Doublinker) Delete(id DoubID) bool {
 	if d.length == 1 && d.head == node {
 		d.head, d.tail = nil, nil
 		d.length--
-		return true
+		return nil
 	}
 	if d.head == node {
 		d.head = node.next
 		d.head.prev = nil
 		d.length--
-		return true
+		return nil
 	}
 	if d.tail == node {
 		d.tail = d.tail.prev
 		d.tail.next = nil
 		d.length--
-		return true
+		return nil
 	}
 	if node.prev == nil || node.next == nil {
-		return false
+		return errors.New("isolated node")
 	}
 	node.prev.next = node.next
 	node.next.prev = node.prev
 	d.length--
-	return true
+	return nil
 }
 
-func (d *Doublinker) Update(id DoubID, data interface{}) bool {
+func (d *Doublinker) Update(id DoubID, data interface{}) error {
 	if id == nil {
-		return false
+		return errors.New("id empty")
 	}
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	node := (*doubnode)(id)
 	node.data = data
-	return true
+	return nil
 }
 
 func (d *Doublinker) Retrieve(id DoubID) interface{} {
