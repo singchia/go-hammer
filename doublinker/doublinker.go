@@ -103,13 +103,26 @@ func (d *Doublinker) Retrieve(id DoubID) interface{} {
 	return node.data
 }
 
-type ForeachFunc func(id DoubID) error
+type ForeachFunc func(data interface{}) error
+type ForeachnodeFunc func(id DoubID) error
+
+func (d *Doublinker) Foreachnode(f ForeachnodeFunc) error {
+	d.mutex.RLock()
+	defer d.mutex.RUnlock()
+	for itor := d.head; itor != nil; itor = itor.next {
+		err := f(DoubID(itor))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 func (d *Doublinker) Foreach(f ForeachFunc) error {
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
 	for itor := d.head; itor != nil; itor = itor.next {
-		err := f(DoubID(itor))
+		err := f(itor.data)
 		if err != nil {
 			return err
 		}

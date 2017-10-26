@@ -132,15 +132,30 @@ func (c *Circulinker) Rightshift() error {
 	return nil
 }
 
-type ForeachFunc func(id CircuID) error
+type ForeachFunc func(data interface{}) error
+type ForeachnodeFunc func(id CircuID) error
 
-func (c *Circulinker) Foreach(f ForeachFunc) error {
+func (c *Circulinker) Foreachnode(f ForeachnodeFunc) error {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
 	itor := c.head
 	for i := 0; i < c.length; i++ {
 		err := f(CircuID(itor))
+		if err != nil {
+			return err
+		}
+		itor = itor.next
+	}
+	return nil
+}
+func (c *Circulinker) Foreach(f ForeachFunc) error {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	itor := c.head
+	for i := 0; i < c.length; i++ {
+		err := f(itor.data)
 		if err != nil {
 			return err
 		}

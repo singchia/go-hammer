@@ -23,14 +23,14 @@ func ShowDetails(id DoubID) error {
 func Test_Add1Elems(t *testing.T) {
 	Init(t)
 	dl.Add(1)
-	dl.Foreach(ShowDetails)
+	dl.Foreachnode(ShowDetails)
 }
 
 func Test_Add2Elems(t *testing.T) {
 	Init(t)
 	dl.Add(1)
 	dl.Add(2)
-	dl.Foreach(ShowDetails)
+	dl.Foreachnode(ShowDetails)
 }
 
 func Test_Add3Elems(t *testing.T) {
@@ -38,7 +38,7 @@ func Test_Add3Elems(t *testing.T) {
 	dl.Add(1)
 	dl.Add(2)
 	dl.Add(3)
-	dl.Foreach(ShowDetails)
+	dl.Foreachnode(ShowDetails)
 }
 
 func Test_Del2elems(t *testing.T) {
@@ -48,7 +48,7 @@ func Test_Del2elems(t *testing.T) {
 	dl.Add(3)
 	dl.Delete(id1)
 	dl.Delete(id2)
-	dl.Foreach(ShowDetails)
+	dl.Foreachnode(ShowDetails)
 }
 
 func Test_Del3elems(t *testing.T) {
@@ -59,17 +59,17 @@ func Test_Del3elems(t *testing.T) {
 	dl.Delete(id1)
 	dl.Delete(id2)
 	dl.Delete(id3)
-	dl.Foreach(ShowDetails)
+	dl.Foreachnode(ShowDetails)
 }
 
 func Test_Update(t *testing.T) {
 	Init(t)
 	id1 := dl.Add(1)
 	id2 := dl.Add(2)
-	dl.Foreach(ShowDetails)
+	dl.Foreachnode(ShowDetails)
 	dl.Update(id1, 3)
 	dl.Update(id2, 4)
-	dl.Foreach(ShowDetails)
+	dl.Foreachnode(ShowDetails)
 }
 
 func Test_Retrieve(t *testing.T) {
@@ -77,5 +77,5 @@ func Test_Retrieve(t *testing.T) {
 	id1 := dl.Add(1)
 	data := dl.Retrieve(id1)
 	t.Log(data)
-	dl.Foreach(ShowDetails)
+	dl.Foreachnode(ShowDetails)
 }
