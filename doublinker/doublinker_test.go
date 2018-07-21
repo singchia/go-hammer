@@ -3,11 +3,15 @@ package doublinker
 import "testing"
 
 var dl *Doublinker
+var dl2 *Doublinker
 var gt *testing.T
 
 func Init(t *testing.T) {
 	if dl == nil {
 		dl = NewDoublinker()
+	}
+	if dl2 == nil {
+		dl2 = NewDoublinker()
 	}
 	if gt == nil {
 		gt = t
@@ -78,4 +82,114 @@ func Test_Retrieve(t *testing.T) {
 	data := dl.Retrieve(id1)
 	t.Log(data)
 	dl.Foreachnode(ShowDetails)
+}
+
+type Stored struct {
+	key   int
+	value int
+}
+
+func (s *Stored) Equel(data interface{}) bool {
+	return s.key == (data.(*Stored)).key
+}
+
+func Test_UniqueAdd(t *testing.T) {
+	Init(t)
+	one := &Stored{1, 1}
+	err, _ := dl.UniqueAdd(one)
+	if err != nil {
+		t.Log(err.Error())
+	}
+	dl.Foreachnode(ShowDetails)
+
+	err, _ = dl.UniqueAdd(one)
+	if err != nil {
+		t.Log(err.Error())
+	}
+
+	two := &Stored{2, 2}
+	err, _ = dl.UniqueAdd(two)
+	if err != nil {
+		t.Log(err.Error())
+	}
+	dl.Foreachnode(ShowDetails)
+
+	three := &Stored{2, 3}
+	err, _ = dl.UniqueAdd(three)
+	if err != nil {
+		t.Log(err.Error())
+	}
+}
+
+func Test_UniqueDelete(t *testing.T) {
+	Init(t)
+	one := &Stored{1, 1}
+	err, _ := dl.UniqueAdd(one)
+	if err != nil {
+		t.Log(err.Error())
+	}
+
+	two := &Stored{2, 2}
+	err, _ = dl.UniqueAdd(two)
+	if err != nil {
+		t.Log(err.Error())
+	}
+
+	three := &Stored{3, 3}
+	err, _ = dl.UniqueAdd(three)
+	if err != nil {
+		t.Log(err.Error())
+	}
+	dl.Foreachnode(ShowDetails)
+	t.Log("------------")
+
+	err = dl.UniqueDelete(one)
+	if err != nil {
+		t.Log(err.Error())
+	}
+	dl.Foreachnode(ShowDetails)
+	t.Log("------------")
+
+	err = dl.UniqueDelete(&Stored{2, 1234})
+	if err != nil {
+		t.Log(err.Error())
+	}
+	dl.Foreachnode(ShowDetails)
+	t.Log("------------")
+
+	err = dl.UniqueDelete(three)
+	if err != nil {
+		t.Log(err.Error())
+	}
+	dl.Foreachnode(ShowDetails)
+	t.Log("------------")
+}
+
+func Test_UniqueMove(t *testing.T) {
+	Init(t)
+	one := &Stored{1, 1}
+	err, _ := dl.UniqueAdd(one)
+	if err != nil {
+		t.Log(err.Error())
+	}
+
+	two := &Stored{2, 2}
+	err, _ = dl.UniqueAdd(two)
+	if err != nil {
+		t.Log(err.Error())
+	}
+
+	three := &Stored{3, 3}
+	err, _ = dl.UniqueAdd(three)
+	if err != nil {
+		t.Log(err.Error())
+	}
+	dl.Foreachnode(ShowDetails)
+	t.Log("------------")
+
+	dl.UniqueMove(&Stored{2, 2}, dl2)
+	dl.Foreachnode(ShowDetails)
+	t.Log("------------")
+	dl2.Foreachnode(ShowDetails)
+	t.Log("------------")
 }
