@@ -5,8 +5,8 @@ import (
 	"sync"
 )
 
-type HasEquel interface {
-	Equel(src interface{}) bool
+type HasEqual interface {
+	Equal(src interface{}) bool
 }
 
 /*
@@ -59,8 +59,8 @@ func (d *Doublinker) UniqueAdd(data interface{}) (error, DoubID) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	for itor := d.head; itor != nil; itor = itor.next {
-		dst, ok := itor.data.(HasEquel)
-		if ok && dst.Equel(data) {
+		dst, ok := itor.data.(HasEqual)
+		if ok && dst.Equal(data) {
 			return errors.New("alrealy exists"), nil
 		}
 	}
@@ -90,21 +90,21 @@ func (d *Doublinker) UniqueDelete(data interface{}) error {
 		return errors.New("empty doublinker")
 	}
 
-	dst, ok := d.head.data.(HasEquel)
-	if d.length == 1 && ok && dst.Equel(data) {
+	dst, ok := d.head.data.(HasEqual)
+	if d.length == 1 && ok && dst.Equal(data) {
 		d.head, d.tail = nil, nil
 		d.length--
 		return nil
 	}
-	if ok && dst.Equel(data) {
+	if ok && dst.Equal(data) {
 		d.head = d.head.next
 		d.head.prev = nil
 		d.length--
 		return nil
 	}
 
-	dst, ok = d.tail.data.(HasEquel)
-	if ok && dst.Equel(data) {
+	dst, ok = d.tail.data.(HasEqual)
+	if ok && dst.Equal(data) {
 		d.tail = d.tail.prev
 		d.tail.next = nil
 		d.length--
@@ -112,8 +112,8 @@ func (d *Doublinker) UniqueDelete(data interface{}) error {
 	}
 	//not first and last
 	for itor := d.head; itor != nil; itor = itor.next {
-		dst, ok := itor.data.(HasEquel)
-		if ok && dst.Equel(data) {
+		dst, ok := itor.data.(HasEqual)
+		if ok && dst.Equal(data) {
 			itor.prev.next = itor.next
 			itor.next.prev = itor.prev
 			d.length--
@@ -127,8 +127,8 @@ func (d *Doublinker) UniqueRetrieve(data interface{}) (error, interface{}) {
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
 	for itor := d.head; itor != nil; itor = itor.next {
-		dst, ok := itor.data.(HasEquel)
-		if ok && dst.Equel(data) {
+		dst, ok := itor.data.(HasEqual)
+		if ok && dst.Equal(data) {
 			return nil, itor.data
 		}
 	}
@@ -197,8 +197,8 @@ func (d *Doublinker) UniqueMove(data interface{}, dst *Doublinker) error {
 	defer d.mutex.Unlock()
 
 	for itor := d.head; itor != nil; itor = itor.next {
-		dst, ok := itor.data.(HasEquel)
-		if ok && dst.Equel(data) {
+		dst, ok := itor.data.(HasEqual)
+		if ok && dst.Equal(data) {
 			node = itor
 			break
 		}

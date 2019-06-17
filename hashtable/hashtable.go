@@ -20,7 +20,7 @@ type node struct {
 	value interface{}
 }
 
-func (n *node) Equel(data interface{}) bool {
+func (n *node) Equal(data interface{}) bool {
 	return n.key == (data.(*node)).key
 }
 

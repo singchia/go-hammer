@@ -89,7 +89,7 @@ type Stored struct {
 	value int
 }
 
-func (s *Stored) Equel(data interface{}) bool {
+func (s *Stored) Equal(data interface{}) bool {
 	return s.key == (data.(*Stored)).key
 }
 
