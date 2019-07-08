@@ -39,9 +39,10 @@ type doubnode struct {
 
 //append a node at tail
 func (d *Doublinker) Add(data interface{}) DoubID {
-	node := &doubnode{data: data, next: nil, prev: nil}
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
+
+	node := &doubnode{data: data, next: nil, prev: nil}
 
 	if d.length == 0 {
 		d.head, d.tail = node, node
@@ -136,12 +137,12 @@ func (d *Doublinker) UniqueRetrieve(data interface{}) (error, interface{}) {
 }
 
 func (d *Doublinker) Delete(id DoubID) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
 	if id == nil {
 		return errors.New("id empty")
 	}
 	node := (*doubnode)(id)
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
 
 	if d.length == 1 && d.head == node {
 		d.head, d.tail = nil, nil
