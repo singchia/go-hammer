@@ -14,6 +14,10 @@ func NewDoublinkerS() *DoublinkerS {
 	return &DoublinkerS{head: nil, tail: nil, length: 0}
 }
 
+func (d *DoublinkerS) Length() int64 {
+	return d.length
+}
+
 //append a node at tail
 func (d *DoublinkerS) Add(data interface{}) DoubID {
 	node := &doubnode{data: data, next: nil, prev: nil}
