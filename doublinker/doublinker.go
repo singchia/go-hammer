@@ -30,6 +30,10 @@ func NewDoublinker() *Doublinker {
 	return &Doublinker{head: nil, tail: nil, length: 0}
 }
 
+func (d *Doublinker) Length() int64 {
+	return d.length
+}
+
 //when node is deleted
 type doubnode struct {
 	data interface{}
