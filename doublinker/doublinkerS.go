@@ -112,6 +112,11 @@ func (d *DoublinkerS) Delete(id DoubID) error {
 	if id == nil {
 		return errors.New("id empty")
 	}
+
+	if d.length == 0 {
+		return errors.New("linker empty")
+	}
+
 	node := (*doubnode)(id)
 
 	if d.length == 1 && d.head == node {
