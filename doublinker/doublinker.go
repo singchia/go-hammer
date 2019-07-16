@@ -160,7 +160,7 @@ func (d *Doublinker) Delete(id DoubID) error {
 		return nil
 	}
 	if d.head == node {
-		d.head = node.next
+		d.head = d.head.next
 		d.head.prev = nil
 		d.length--
 		return nil
