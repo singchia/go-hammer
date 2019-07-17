@@ -198,6 +198,11 @@ func (d *Doublinker) Retrieve(id DoubID) interface{} {
 	return node.data
 }
 
+func (d *Doublinker) RetrieveFree(id DoubID) interface{} {
+	node := (*doubnode)(id)
+	return node.data
+}
+
 //move to another doublinker
 func (d *Doublinker) UniqueMove(data interface{}, dst *Doublinker) error {
 	if data == nil || dst == nil {
