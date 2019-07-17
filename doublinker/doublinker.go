@@ -23,11 +23,16 @@ type Doublinker struct {
 	head   *doubnode
 	tail   *doubnode
 	length int64
-	mutex  sync.RWMutex
+	mutex  *sync.RWMutex
 }
 
 func NewDoublinker() *Doublinker {
-	return &Doublinker{head: nil, tail: nil, length: 0}
+	return &Doublinker{
+		head:   nil,
+		tail:   nil,
+		length: 0,
+		mutex:  new(sync.RWMutex),
+	}
 }
 
 func (d *Doublinker) Length() int64 {
