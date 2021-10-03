@@ -1,4 +1,4 @@
-package circulinker
+package linker
 
 import "testing"
 

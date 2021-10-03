@@ -1,4 +1,4 @@
-package doublinker
+package linker
 
 import "testing"
 

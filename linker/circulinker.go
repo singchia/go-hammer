@@ -1,4 +1,4 @@
-package circulinker
+package linker
 
 import (
 	"errors"
@@ -132,10 +132,9 @@ func (c *Circulinker) Rightshift() error {
 	return nil
 }
 
-type ForeachFunc func(data interface{}) error
-type ForeachnodeFunc func(id CircuID) error
+type ForeachCircuNodeFunc func(id CircuID) error
 
-func (c *Circulinker) Foreachnode(f ForeachnodeFunc) error {
+func (c *Circulinker) Foreachnode(f ForeachCircuNodeFunc) error {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 

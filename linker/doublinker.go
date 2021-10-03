@@ -1,4 +1,4 @@
-package doublinker
+package linker
 
 import (
 	"errors"
@@ -303,10 +303,9 @@ func (d *Doublinker) Take(node *doubnode) error {
 
 }
 
-type ForeachFunc func(data interface{}) error
-type ForeachnodeFunc func(id DoubID) error
+type ForeachDoubNodeFunc func(id DoubID) error
 
-func (d *Doublinker) Foreachnode(f ForeachnodeFunc) error {
+func (d *Doublinker) ForeachNode(f ForeachDoubNodeFunc) error {
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
 	for itor := d.head; itor != nil; itor = itor.next {

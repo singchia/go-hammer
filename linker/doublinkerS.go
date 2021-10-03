@@ -1,4 +1,4 @@
-package doublinker
+package linker
 
 import (
 	"errors"
@@ -248,7 +248,7 @@ func (d *DoublinkerS) Take(node *doubnode) error {
 
 }
 
-func (d *DoublinkerS) Foreachnode(f ForeachnodeFunc) error {
+func (d *DoublinkerS) ForeachNode(f ForeachDoubNodeFunc) error {
 	for itor := d.head; itor != nil; itor = itor.next {
 		err := f(DoubID(itor))
 		if err != nil {
