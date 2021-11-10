@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/singchia/go-hammer/doublinker"
+	"github.com/singchia/go-hammer/linker"
 )
 
 type Hashable interface {
@@ -27,15 +27,15 @@ func (n *node) Equal(data interface{}) bool {
 var Length uint32 = 64
 
 type Hashtable struct {
-	table []*doublinker.Doublinker
+	table []*linker.Doublinker
 	mutex *sync.RWMutex
 }
 
 func NewHashtable() *Hashtable {
 	h := &Hashtable{}
-	h.table = make([]*doublinker.Doublinker, 0, Length)
+	h.table = make([]*linker.Doublinker, 0, Length)
 	for i := uint32(0); i < Length; i++ {
-		h.table = append(h.table, doublinker.NewDoublinker())
+		h.table = append(h.table, linker.NewDoublinker())
 	}
 	h.mutex = new(sync.RWMutex)
 	return h
@@ -150,4 +150,4 @@ func (h *Hashtable) Foreachitem(f ForeachitemFunc) error {
 	return nil
 }
 
-type ForeachitemFunc func(dl *doublinker.Doublinker) error
+type ForeachitemFunc func(dl *linker.Doublinker) error
