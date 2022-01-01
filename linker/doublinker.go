@@ -9,12 +9,6 @@ type HasEqual interface {
 	Equal(src interface{}) bool
 }
 
-/*
-*	I was trying to put Channel and Handler into doubnode,
-*	but those should belong to business data, should be
-*	done at application layer
-**/
-
 //we don't want generate a int64 to index the concrete node
 //pointer is the best index
 type DoubID *doubnode
