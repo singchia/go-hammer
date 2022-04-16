@@ -34,11 +34,11 @@ func (d *DoublinkerS) Add(data interface{}) DoubID {
 	return node
 }
 
-func (d *DoublinkerS) UniqueAdd(data interface{}) (error, DoubID) {
+func (d *DoublinkerS) UniqueAdd(data interface{}) (DoubID, error) {
 	for itor := d.head; itor != nil; itor = itor.next {
 		dst, ok := itor.data.(HasEqual)
 		if ok && dst.Equal(data) {
-			return errors.New("alrealy exists"), nil
+			return nil, errors.New("alrealy exists")
 		}
 	}
 	node := &doubnode{data: data, next: nil, prev: nil}
@@ -46,13 +46,13 @@ func (d *DoublinkerS) UniqueAdd(data interface{}) (error, DoubID) {
 	if d.length == 0 {
 		d.head, d.tail = node, node
 		d.length++
-		return nil, node
+		return node, nil
 	}
 	d.tail.next = node
 	node.prev = d.tail
 	d.tail = node
 	d.length++
-	return nil, node
+	return node, nil
 
 }
 
@@ -98,14 +98,14 @@ func (d *DoublinkerS) UniqueDelete(data interface{}) error {
 	return errors.New("not found")
 }
 
-func (d *DoublinkerS) UniqueRetrieve(data interface{}) (error, interface{}) {
+func (d *DoublinkerS) UniqueRetrieve(data interface{}) (interface{}, error) {
 	for itor := d.head; itor != nil; itor = itor.next {
 		dst, ok := itor.data.(HasEqual)
 		if ok && dst.Equal(data) {
-			return nil, itor.data
+			return itor.data, nil
 		}
 	}
-	return errors.New("not found"), nil
+	return nil, errors.New("not found")
 }
 
 func (d *DoublinkerS) Delete(id DoubID) error {

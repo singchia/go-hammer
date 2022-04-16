@@ -41,7 +41,7 @@ func NewHashtable() *Hashtable {
 	return h
 }
 
-func (h *Hashtable) hash(key interface{}) (error, uint32) {
+func (h *Hashtable) hash(key interface{}) (uint32, error) {
 	var str string
 	var slice []byte
 	switch key.(type) {
@@ -98,28 +98,28 @@ func (h *Hashtable) hash(key interface{}) (error, uint32) {
 	default:
 		//reflect
 		if reflect.TypeOf(key).Kind() != reflect.Uintptr {
-			return errors.New("unhashable key"), 0
+			return 0, errors.New("unhashable key")
 		}
 		str = fmt.Sprintf("%p", key.(uintptr))
 		slice = []byte(str)
 	}
 	hash := fnv.New32()
 	hash.Write(slice)
-	return nil, hash.Sum32() % Length
+	return hash.Sum32() % Length, nil
 }
 
 func (h *Hashtable) Add(key interface{}, value interface{}) error {
-	err, index := h.hash(key)
+	index, err := h.hash(key)
 	if err != nil {
 		return err
 	}
 	n := &node{key: key, value: value}
-	err, _ = h.table[index].UniqueAdd(n)
+	_, err = h.table[index].UniqueAdd(n)
 	return err
 }
 
 func (h *Hashtable) Delete(key interface{}) error {
-	err, index := h.hash(key)
+	index, err := h.hash(key)
 	if err != nil {
 		return err
 	}
@@ -127,14 +127,14 @@ func (h *Hashtable) Delete(key interface{}) error {
 	return h.table[index].UniqueDelete(n)
 }
 
-func (h *Hashtable) Retrieve(key interface{}) (error, interface{}) {
-	err, index := h.hash(key)
+func (h *Hashtable) Retrieve(key interface{}) (interface{}, error) {
+	index, err := h.hash(key)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 	n := &node{key: key}
-	err, value := h.table[index].UniqueRetrieve(n)
-	return err, value.(*node).value
+	value, err := h.table[index].UniqueRetrieve(n)
+	return value.(*node).value, err
 }
 
 func (h *Hashtable) Foreachitem(f ForeachitemFunc) error {
