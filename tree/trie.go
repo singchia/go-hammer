@@ -1,7 +1,7 @@
 package tree
 
 type Trie interface {
-	Add(words ...string) bool
+	Add(word string, value interface{}) bool
 	Clear()
 	Contains(word string) bool
 	ContainsPrefix(prefix string) bool
