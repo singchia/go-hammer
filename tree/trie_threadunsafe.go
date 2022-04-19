@@ -31,34 +31,68 @@ func (node *trieNode) add(new bool, word string, letters []rune, value interface
 	}
 
 	letter := letters[0]
-	node, ok := node.children[letter]
-	new := false
-	if !ok {
-		node = &trieNode{
+
+	if new {
+		newNode := &trieNode{
 			letter: letter,
 		}
-		node.children[letter] = node
-		new = true
+		node.children[letter] = newNode
+		return newNode.add(new, word, letters[1:], value)
 	}
-	return node.add(new, word, letters[1:], value)
+
+	child, ok := node.children[letter]
+	new = false
+	if !ok {
+		new = true
+		child = &trieNode{
+			letter: letter,
+		}
+		node.children[letter] = child
+	}
+	return child.add(new, word, letters[1:], value)
+}
+
+func (node *trieNode) iterator(iterate func(node *trieNode)) {
+	if node.children != nil {
+		for _, child := range node.children {
+			iterate(child)
+			child.iterator(iterate)
+		}
+	}
 }
 
 func (trie *trie) Add(word string, value interface{}) bool {
-	if len(word) == 0 {
+	letters := []rune(word)
+	length := len(letters)
+	if length == 0 {
 		return false
 	}
-	letters := []rune(word)
+
 	letter := letters[0]
 	node, ok := trie.children[letter]
 	new := false
 	if !ok {
+		new = true
 		node = &trieNode{
 			letter: letter,
 		}
 		trie.children[letter] = node
-		new = true
 	}
 	return node.add(new, word, letters[1:], value)
+}
+
+func (trie *trie) List() []string {
+	words := []string{}
+	iterate := func(node *trieNode) {
+		if node.hasWord {
+			words = append(words, node.word)
+		}
+	}
+	for _, node := range trie.children {
+		iterate(node)
+		node.iterator(iterate)
+	}
+	return words
 }
 
 func (trie *trie) Clear() {
@@ -66,4 +100,5 @@ func (trie *trie) Clear() {
 }
 
 func (trie *trie) Contains(word string) bool {
+	return false
 }
