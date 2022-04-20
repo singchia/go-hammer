@@ -18,3 +18,7 @@ type TrieNode interface {
 func NewTrie() Trie {
 	return newTrie()
 }
+
+func NewTrieCC() Trie {
+	return newTrieCC()
+}
