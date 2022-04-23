@@ -3,11 +3,11 @@ package list
 type List interface {
 	Back() Node
 	Front() Node
-	InsertAfter(value interface{}, node *Node) bool
-	InsertBefore(value interface{}, node *Node) bool
+	InsertAfter(value interface{}, to *Node) *Node
+	InsertBefore(value interface{}, to *Node) *Node
 	Len() int
-	MoveAfter(value interface{}, node *Node)
-	MoveBefore(value interface{}, node *Node)
+	MoveAfter(node, to *Node)
+	MoveBefore(node, to *Node)
 	MoveToBack(node *Node)
 	MoveToFront(node *Node)
 	PushBack(node *Node)
