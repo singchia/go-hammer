@@ -35,7 +35,7 @@ func stringsEqual(a []interface{}, b []string) bool {
 	return true
 }
 
-func TestDoubListAdd(t *testing.T) {
+func TestDoubListPush(t *testing.T) {
 	dlist := NewDoubList()
 	for index, word := range wordsAdd {
 		dlist.PushBack(word)

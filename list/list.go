@@ -1,21 +1,26 @@
 package list
 
 type List interface {
-	All() []interface{}
 	Back() *Node
 	Front() *Node
-	InsertAfter(value interface{}, to *Node) *Node
-	InsertBefore(value interface{}, to *Node) *Node
 	Len() int
 	MoveAfter(node, to *Node)
 	MoveBefore(node, to *Node)
 	MoveToBack(node *Node)
 	MoveToFront(node *Node)
+	InsertAfter(value interface{}, to *Node) *Node
+	InsertBefore(value interface{}, to *Node) *Node
 	PushBack(value interface{}) *Node
 	PushFront(value interface{}) *Node
 	PushBackList(list List)
 	PushFrontList(list List)
 	Remove(node *Node)
+	All() []interface{}
+	Iterate(iterator Iterator)
+	ReceiveAfter(node *Node, to *Node)
+	ReceiveBefore(node *Node, to *Node)
+	ReceiveToBack(node *Node)
+	ReceiveToFront(node *Node)
 }
 
 type Node struct {
@@ -39,6 +44,13 @@ func (node *Node) Prev() *Node {
 func (node *Node) Detach() {
 	node.list.Remove(node)
 }
+
+func (node *Node) DetachTo(other List) {
+	node.list.Remove(node)
+	other.ReceiveToBack(node)
+}
+
+type Iterator func(node *Node) bool
 
 func NewDoubList() List {
 	return &doublist{

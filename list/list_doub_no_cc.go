@@ -18,6 +18,7 @@ func (list *doublist) InsertAfter(value interface{}, to *Node) *Node {
 		return nil
 	}
 	node := &Node{
+		list:  list,
 		value: value,
 		next:  nil,
 		prev:  nil,
@@ -28,6 +29,9 @@ func (list *doublist) InsertAfter(value interface{}, to *Node) *Node {
 		to.next.prev = node
 	}
 	to.next = node
+	if list.tail == to {
+		list.tail = node
+	}
 	return node
 }
 
@@ -36,6 +40,7 @@ func (list *doublist) InsertBefore(value interface{}, to *Node) *Node {
 		return nil
 	}
 	node := &Node{
+		list:  list,
 		value: value,
 		next:  nil,
 		prev:  nil,
@@ -46,6 +51,9 @@ func (list *doublist) InsertBefore(value interface{}, to *Node) *Node {
 		to.prev.next = node
 	}
 	to.prev = node
+	if list.head == to {
+		list.head = node
+	}
 	return node
 }
 
@@ -70,7 +78,6 @@ func (list *doublist) MoveAfter(node, to *Node) {
 		to.next.prev = node
 	}
 	to.next = node
-
 	if list.tail == to {
 		list.tail = node
 	}
@@ -80,6 +87,9 @@ func (list *doublist) MoveBefore(node, to *Node) {
 	if node.list != list || to.list != list ||
 		node == to || to.prev == node {
 		return
+	}
+	if list.tail == node {
+		list.tail = node.prev
 	}
 	if node.prev != nil {
 		node.prev.next = node.next
@@ -102,6 +112,9 @@ func (list *doublist) MoveToBack(node *Node) {
 	if node.list != list || list.tail == node {
 		return
 	}
+	if list.head == node {
+		list.head = node.next
+	}
 	if node.prev != nil {
 		node.prev.next = node.next
 	}
@@ -118,6 +131,9 @@ func (list *doublist) MoveToFront(node *Node) {
 	if node.list != list || list.tail == node {
 		return
 	}
+	if list.tail == node {
+		list.tail = node.prev
+	}
 	if node.prev != nil {
 		node.prev.next = node.next
 	}
@@ -132,6 +148,7 @@ func (list *doublist) MoveToFront(node *Node) {
 
 func (list *doublist) PushBack(value interface{}) *Node {
 	node := &Node{
+		list:  list,
 		value: value,
 		next:  nil,
 		prev:  nil,
@@ -149,6 +166,7 @@ func (list *doublist) PushBack(value interface{}) *Node {
 
 func (list *doublist) PushFront(value interface{}) *Node {
 	node := &Node{
+		list:  list,
 		value: value,
 		next:  nil,
 		prev:  nil,
@@ -192,7 +210,7 @@ func (list *doublist) Remove(node *Node) {
 		node.prev.next = node.next
 		node.next.prev = node.prev
 	}
-	node.next, node.prev = nil, nil
+	node.list, node.next, node.prev = nil, nil, nil
 	list.length--
 }
 
@@ -202,4 +220,68 @@ func (list *doublist) All() []interface{} {
 		all = append(all, node.Value())
 	}
 	return all
+}
+
+func (list *doublist) Iterate(iterator Iterator) {
+	for node := list.Front(); node != nil; node = node.Next() {
+		if iterator(node) == false {
+			return
+		}
+	}
+}
+
+func (list *doublist) ReceiveAfter(node *Node, to *Node) {
+	if node.list != nil || to.list != list {
+		return
+	}
+	node.list = list
+	node.prev = to
+	node.next = to.next
+	if to.next != nil {
+		to.next.prev = node
+	}
+	to.next = node
+	if list.tail == to {
+		list.tail = node
+	}
+	list.length++
+}
+
+func (list *doublist) ReceiveBefore(node *Node, to *Node) {
+	if node.list != nil || to.list != list {
+		return
+	}
+	node.list = list
+	node.prev = to
+	node.next = to.next
+	if to.prev != nil {
+		to.prev.next = node
+	}
+	to.prev = node
+	if list.head == to {
+		list.head = node
+	}
+	list.length++
+}
+
+func (list *doublist) ReceiveToBack(node *Node) {
+	if list.length == 0 {
+		list.head, list.tail = node, node
+	} else {
+		node.prev = list.tail
+		list.tail.next = node
+		list.tail = node
+	}
+	list.length++
+}
+
+func (list *doublist) ReceiveToFront(node *Node) {
+	if list.length == 0 {
+		list.head, list.tail = node, node
+	} else {
+		node.next = list.head
+		list.head.prev = node
+		list.head = node
+	}
+	list.length++
 }
