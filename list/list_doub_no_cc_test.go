@@ -14,6 +14,13 @@ var (
 		"d",
 		"e",
 	}
+	wordsInsert = []string{
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+	}
 )
 
 func stringsEqual(a []interface{}, b []string) bool {

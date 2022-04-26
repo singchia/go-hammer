@@ -32,11 +32,13 @@ func TestCircuListInsert(t *testing.T) {
 	clist.InsertAfter("b", a)
 	all := clist.All()
 	t.Log(all,
+		clist.Len(),
 		a.Value(),
 		a.Next().Value(),
 		a.Next().Next().Value(),
 		a.Next().Next().Next().Value())
 	t.Log(all,
+		clist.Len(),
 		a.Value(),
 		a.Prev().Value(),
 		a.Prev().Prev().Value(),

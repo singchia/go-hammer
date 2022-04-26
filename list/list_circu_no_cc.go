@@ -30,6 +30,7 @@ func (list *circulist) InsertAfter(value interface{}, to *Node) *Node {
 	if list.tail == to {
 		list.tail = node
 	}
+	list.length++
 	return node
 }
 
@@ -50,6 +51,7 @@ func (list *circulist) InsertBefore(value interface{}, to *Node) *Node {
 	if list.head == to {
 		list.head = node
 	}
+	list.length++
 	return node
 }
 

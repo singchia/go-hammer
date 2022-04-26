@@ -32,6 +32,7 @@ func (list *doublist) InsertAfter(value interface{}, to *Node) *Node {
 	if list.tail == to {
 		list.tail = node
 	}
+	list.length++
 	return node
 }
 
@@ -54,6 +55,7 @@ func (list *doublist) InsertBefore(value interface{}, to *Node) *Node {
 	if list.head == to {
 		list.head = node
 	}
+	list.length++
 	return node
 }
 
