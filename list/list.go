@@ -57,3 +57,9 @@ func NewDoubList() List {
 		nil, nil, 0,
 	}
 }
+
+func NewCircuList() List {
+	return &circulist{
+		nil, nil, 0,
+	}
+}

@@ -128,7 +128,7 @@ func (list *doublist) MoveToBack(node *Node) {
 }
 
 func (list *doublist) MoveToFront(node *Node) {
-	if node.list != list || list.tail == node {
+	if node.list != list || list.head == node {
 		return
 	}
 	if list.tail == node {
