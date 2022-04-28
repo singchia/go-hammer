@@ -1,4 +1,4 @@
-package prioqueue
+package queue
 
 import (
 	"container/list"
