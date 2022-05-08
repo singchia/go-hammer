@@ -11,12 +11,6 @@ import (
 	"github.com/singchia/go-hammer/linker"
 )
 
-type Hashtable interface {
-	Add(key, value interface{}) bool
-	Remove(key interface{}) bool
-	Get(key interface{}) (interface{}, bool)
-}
-
 type Hashable interface {
 	Hash() string
 }

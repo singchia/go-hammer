@@ -1,4 +1,4 @@
-package bitmap
+package bitindex
 
 import (
 	"sync/atomic"
@@ -6,17 +6,16 @@ import (
 )
 
 type bitIndex struct {
-	pIndexes unsafe.Pointer // *[]bitIndex
-	end      uint64
+	pIndexes unsafe.Pointer
 }
 
-func newBitIndex() *bitIndex {
+func newBitIndex() Bitmap {
 	return &bitIndex{}
 }
 
-// 2^(10+8+8+6)
 func (bi *bitIndex) Add(x uint32) bool {
-	return bi.add(bi.indexes(x))
+	indexes := bi.indexes(x)
+	return bi.add(indexes)
 }
 
 func (bi *bitIndex) Del(x uint32) bool {
@@ -28,28 +27,35 @@ func (bi *bitIndex) Contains(x uint32) bool {
 }
 
 func (bi *bitIndex) indexes(x uint32) []uint32 {
-	first := x >> 22
-	second := (x << 10) >> 24
+	last := (x << 26) >> 26
 	third := (x << 18) >> 24
-	end := (x << 28) >> 26
-	return []uint32{first, second, third, end}
+	second := (x << 10) >> 24
+	first := x >> 22
+	return []uint32{first, second, third, last}
 }
 
 func (bi *bitIndex) add(indexes []uint32) bool {
 	if len(indexes) == 1 {
 		offset := indexes[0]
-		old := atomic.LoadUint64(&bi.end)
+		bm := uint64(0)
+		if atomic.LoadPointer(&bi.pIndexes) == unsafe.Pointer(nil) {
+			pBM := unsafe.Pointer(&bm)
+			atomic.CompareAndSwapPointer(&bi.pIndexes, unsafe.Pointer(nil), pBM)
+		}
+		pBM := atomic.LoadPointer(&bi.pIndexes)
+		pOld := (*uint64)(pBM)
+		old := atomic.LoadUint64(pOld)
 		if old&(1<<offset) == (1 << offset) {
 			return false
 		}
 		swapped := false
 		for !swapped {
 			new := old | (1 << offset)
-			swapped = atomic.CompareAndSwapUint64(&bi.end, old, new)
+			swapped = atomic.CompareAndSwapUint64(pOld, old, new)
 			if swapped {
 				return true
 			} else {
-				old = atomic.LoadUint64(&bi.end)
+				old = atomic.LoadUint64(pOld)
 				if old&(1<<offset) == (1 << offset) {
 					return false
 				}
@@ -57,7 +63,7 @@ func (bi *bitIndex) add(indexes []uint32) bool {
 		}
 	} else {
 		index := indexes[0]
-		if bi.pIndexes == nil {
+		if atomic.LoadPointer(&bi.pIndexes) == unsafe.Pointer(nil) {
 			indexes := make([]bitIndex, 1024)
 			pIndexes := unsafe.Pointer(&indexes)
 			atomic.CompareAndSwapPointer(&bi.pIndexes, unsafe.Pointer(nil), pIndexes)
@@ -71,28 +77,31 @@ func (bi *bitIndex) add(indexes []uint32) bool {
 func (bi *bitIndex) del(indexes []uint32) bool {
 	if len(indexes) == 1 {
 		offset := indexes[0]
-		old := atomic.LoadUint64(&bi.end)
+		if atomic.LoadPointer(&bi.pIndexes) == unsafe.Pointer(nil) {
+			return false
+		}
+		pBM := atomic.LoadPointer(&bi.pIndexes)
+		pOld := (*uint64)(pBM)
+		old := atomic.LoadUint64(pOld)
 		if !(old&(1<<offset) == (1 << offset)) {
-			// already set
 			return false
 		}
 		swapped := false
 		for !swapped {
 			new := old & ^(1 << offset)
-			swapped = atomic.CompareAndSwapUint64(&bi.end, old, new)
+			swapped = atomic.CompareAndSwapUint64(pOld, old, new)
 			if swapped {
 				return true
 			} else {
-				old = atomic.LoadUint64(&bi.end)
+				old = atomic.LoadUint64(pOld)
 				if !(old&(1<<offset) == (1 << offset)) {
-					// already set
 					return false
 				}
 			}
 		}
 	} else {
 		index := indexes[0]
-		if bi.pIndexes == nil {
+		if atomic.LoadPointer(&bi.pIndexes) == unsafe.Pointer(nil) {
 			return false
 		}
 		pIndexes := atomic.LoadPointer(&bi.pIndexes)
@@ -104,14 +113,19 @@ func (bi *bitIndex) del(indexes []uint32) bool {
 func (bi *bitIndex) contains(indexes []uint32) bool {
 	if len(indexes) == 1 {
 		offset := indexes[0]
-		old := atomic.LoadUint64(&bi.end)
+		if atomic.LoadPointer(&bi.pIndexes) == unsafe.Pointer(nil) {
+			return false
+		}
+		pBM := atomic.LoadPointer(&bi.pIndexes)
+		pOld := (*uint64)(pBM)
+		old := atomic.LoadUint64(pOld)
 		if !(old&(1<<offset) == (1 << offset)) {
 			return false
 		}
 		return true
 	} else {
 		index := indexes[0]
-		if bi.pIndexes == nil {
+		if atomic.LoadPointer(&bi.pIndexes) == unsafe.Pointer(nil) {
 			return false
 		}
 		pIndexes := atomic.LoadPointer(&bi.pIndexes)

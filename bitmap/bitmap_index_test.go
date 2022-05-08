@@ -1,9 +1,9 @@
-package bitmap
+package bitindex
 
 import (
-	"fmt"
-	"runtime"
 	"testing"
+
+	"github.com/RoaringBitmap/roaring"
 )
 
 func TestBitIndex(t *testing.T) {
@@ -23,14 +23,15 @@ func TestBitIndex(t *testing.T) {
 }
 
 func BenchmarkBitIndex(b *testing.B) {
-	var m1, m2 runtime.MemStats
-	runtime.ReadMemStats(&m1)
-
 	bi := newBitIndex()
 	for i := 0; i < b.N; i++ {
 		bi.Add(uint32(i))
 	}
-	runtime.ReadMemStats(&m2)
-	fmt.Println("total:", m2.TotalAlloc-m1.TotalAlloc)
-	fmt.Println("mallocs:", m2.Mallocs-m1.Mallocs)
+}
+
+func BenchmarkRoaring(b *testing.B) {
+	rb := roaring.New()
+	for i := 0; i < b.N; i++ {
+		rb.Add(uint32(i))
+	}
 }
