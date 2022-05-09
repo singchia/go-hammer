@@ -215,13 +215,63 @@ func (list *circulist) Iterate(iterator Iterator) {
 }
 
 func (list *circulist) ReceiveAfter(node, to *Node) {
+	if node.list == list || node.list != nil || to.list != list {
+		return
+	}
+	node.Detach()
+	node.list = list
+	if to.next != nil {
+		to.next.prev = node
+	}
+	to.next = node
+	if list.tail == to {
+		list.tail = node
+	}
+	list.length++
 }
 
 func (list *circulist) ReceiveBefore(node, to *Node) {
+	if node.list == list || node.list != nil || to.list != list {
+		return
+	}
+	node.Detach()
+	node.list = list
+	if to.prev != nil {
+		to.prev.next = node
+	}
+	to.prev = node
+	if list.head == to {
+		list.head = node
+	}
+	list.length++
 }
 
 func (list *circulist) ReceiveToBack(node *Node) {
+	if list.length == 0 {
+		node.prev, node.next = node, node
+		list.head, list.tail = node, node
+	} else {
+		if node == list.tail {
+			return
+		}
+		node.prev = list.tail
+		list.tail.next = node
+		list.tail = node
+	}
+	list.length++
 }
 
 func (list *circulist) ReceiveToFront(node *Node) {
+	if list.length == 0 {
+		node.prev, node.next = node, node
+		list.head, list.tail = node, node
+	} else {
+		if node == list.head {
+			return
+		}
+		node.next = list.head
+		list.head.prev = node
+		list.head = node
+	}
+	list.length++
 }
