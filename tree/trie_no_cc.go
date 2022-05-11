@@ -62,11 +62,11 @@ func (node *trieNode) add(new bool, word string, letters []rune, value interface
 	return child.add(new, word, letters[1:], value)
 }
 
-func (node *trieNode) iterator(iterate func(node *trieNode)) {
+func (node *trieNode) iterate(iterate func(node *trieNode)) {
 	if node.children != nil {
 		for _, child := range node.children {
 			iterate(child)
-			child.iterator(iterate)
+			child.iterate(iterate)
 		}
 	}
 }
@@ -190,7 +190,7 @@ func (trie *trieNode) List() []string {
 	}
 	for _, node := range trie.children {
 		iterate(node)
-		node.iterator(iterate)
+		node.iterate(iterate)
 	}
 	return words
 }
