@@ -8,6 +8,7 @@ type List interface {
 	MoveBefore(node, to *Node)
 	MoveToBack(node *Node)
 	MoveToFront(node *Node)
+	CompareInsert(value interface{}, compare func(value, next interface{}) int) (*Node, bool)
 	InsertAfter(value interface{}, to *Node) *Node
 	InsertBefore(value interface{}, to *Node) *Node
 	PushBack(value interface{}) *Node
@@ -16,7 +17,7 @@ type List interface {
 	PushFrontList(list List)
 	Remove(node *Node)
 	All() []interface{}
-	Iterate(iterator Iterator)
+	Iterate(cb func(node *Node) bool)
 	ReceiveAfter(node *Node, to *Node)
 	ReceiveBefore(node *Node, to *Node)
 	ReceiveToBack(node *Node)
@@ -49,8 +50,6 @@ func (node *Node) DetachTo(other List) {
 	node.list.Remove(node)
 	other.ReceiveToBack(node)
 }
-
-type Iterator func(node *Node) bool
 
 func NewDoubList() List {
 	return &doublist{

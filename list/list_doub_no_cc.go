@@ -13,6 +13,19 @@ func (list *doublist) Front() *Node {
 	return list.head
 }
 
+func (list *doublist) CompareInsert(value interface{}, compare func(value, next interface{}) int) (*Node, bool) {
+	for i, node := 0, list.Front(); i < list.length; i, node = i+1, node.Next() {
+		ret := compare(value, node.value)
+		if ret == 0 {
+			return node, false
+		}
+		if ret < 0 {
+			return list.InsertBefore(value, node), true
+		}
+	}
+	return list.PushBack(value), true
+}
+
 func (list *doublist) InsertAfter(value interface{}, to *Node) *Node {
 	if to.list != list {
 		return nil
@@ -224,9 +237,9 @@ func (list *doublist) All() []interface{} {
 	return all
 }
 
-func (list *doublist) Iterate(iterator Iterator) {
+func (list *doublist) Iterate(cb func(node *Node) bool) {
 	for node := list.Front(); node != nil; node = node.Next() {
-		if iterator(node) == false {
+		if cb(node) == false {
 			return
 		}
 	}

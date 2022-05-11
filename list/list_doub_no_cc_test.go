@@ -8,6 +8,7 @@ import (
 
 var (
 	wordsAdd = []string{
+		"z",
 		"a",
 		"b",
 		"c",
@@ -76,5 +77,24 @@ func TestDoubListRemove(t *testing.T) {
 			}
 		}
 		t.Log(all)
+	}
+}
+
+func compare(value, next interface{}) int {
+	a := value.(string)
+	b := next.(string)
+	if a > b {
+		return 1
+	} else if a == b {
+		return 0
+	}
+	return -1
+}
+
+func TestDoubListCompareInsert(t *testing.T) {
+	dlist := NewDoubList()
+	for i := 0; i < len(wordsAdd); i++ {
+		dlist.CompareInsert(wordsAdd[i], compare)
+		t.Log(dlist.Len(), dlist.All())
 	}
 }

@@ -206,9 +206,22 @@ func (list *circulist) All() []interface{} {
 	return all
 }
 
-func (list *circulist) Iterate(iterator Iterator) {
+func (list *circulist) CompareInsert(value interface{}, compare func(value, next interface{}) int) (*Node, bool) {
 	for i, node := 0, list.Front(); i < list.length; i, node = i+1, node.Next() {
-		if iterator(node) == false {
+		ret := compare(value, node.value)
+		if ret == 0 {
+			return node, false
+		}
+		if ret < 0 {
+			return list.InsertBefore(value, node), true
+		}
+	}
+	return list.PushBack(value), true
+}
+
+func (list *circulist) Iterate(cb func(node *Node) bool) {
+	for i, node := 0, list.Front(); i < list.length; i, node = i+1, node.Next() {
+		if cb(node) == false {
 			return
 		}
 	}
