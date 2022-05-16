@@ -13,7 +13,8 @@ func (list *doublist) Front() *Node {
 	return list.head
 }
 
-func (list *doublist) CompareInsert(value interface{}, compare func(value, next interface{}) int) (*Node, bool) {
+func (list *doublist) CompareInsert(value interface{},
+	compare func(value, next interface{}) int) (*Node, bool) {
 	for i, node := 0, list.Front(); i < list.length; i, node = i+1, node.Next() {
 		ret := compare(value, node.value)
 		if ret == 0 {
@@ -24,6 +25,28 @@ func (list *doublist) CompareInsert(value interface{}, compare func(value, next 
 		}
 	}
 	return list.PushBack(value), true
+}
+
+func (list *doublist) CompareRemove(value interface{},
+	compare func(value, next interface{}) int) bool {
+	for i, node := 0, list.Front(); i < list.length; i, node = i+1, node.Next() {
+		ret := compare(value, node.value)
+		if ret == 0 {
+			return list.Remove(node)
+		}
+	}
+	return false
+}
+
+func (list *doublist) CompareGet(value interface{},
+	compare func(value, next interface{}) int) *Node {
+	for i, node := 0, list.Front(); i < list.length; i, node = i+1, node.Next() {
+		ret := compare(value, node.value)
+		if ret == 0 {
+			return node
+		}
+	}
+	return nil
 }
 
 func (list *doublist) InsertAfter(value interface{}, to *Node) *Node {
@@ -209,9 +232,9 @@ func (list *doublist) PushFrontList(other List) {
 	}
 }
 
-func (list *doublist) Remove(node *Node) {
+func (list *doublist) Remove(node *Node) bool {
 	if node.list != list {
-		return
+		return false
 	}
 	if list.length == 1 {
 		list.head, list.tail = nil, nil
@@ -227,6 +250,7 @@ func (list *doublist) Remove(node *Node) {
 	}
 	node.list, node.next, node.prev = nil, nil, nil
 	list.length--
+	return true
 }
 
 func (list *doublist) All() []interface{} {

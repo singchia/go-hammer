@@ -9,13 +9,15 @@ type List interface {
 	MoveToBack(node *Node)
 	MoveToFront(node *Node)
 	CompareInsert(value interface{}, compare func(value, next interface{}) int) (*Node, bool)
+	CompareRemove(value interface{}, compare func(value, next interface{}) int) bool
+	CompareGet(value interface{}, compare func(value, next interface{}) int) *Node
 	InsertAfter(value interface{}, to *Node) *Node
 	InsertBefore(value interface{}, to *Node) *Node
 	PushBack(value interface{}) *Node
 	PushFront(value interface{}) *Node
 	PushBackList(list List)
 	PushFrontList(list List)
-	Remove(node *Node)
+	Remove(node *Node) bool
 	All() []interface{}
 	Iterate(cb func(node *Node) bool)
 	ReceiveAfter(node *Node, to *Node)
@@ -28,6 +30,10 @@ type Node struct {
 	list       List
 	value      interface{}
 	prev, next *Node
+}
+
+func (node *Node) SetValue(value interface{}) {
+	node.value = value
 }
 
 func (node *Node) Value() interface{} {

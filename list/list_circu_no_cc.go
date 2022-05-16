@@ -184,9 +184,9 @@ func (list *circulist) PushFrontList(other List) {
 	}
 }
 
-func (list *circulist) Remove(node *Node) {
+func (list *circulist) Remove(node *Node) bool {
 	if node.list != list {
-		return
+		return false
 	}
 	if list.length == 1 {
 		list.head, list.tail = nil, nil
@@ -196,6 +196,7 @@ func (list *circulist) Remove(node *Node) {
 	}
 	node.list, node.next, node.prev = nil, nil, nil
 	list.length--
+	return true
 }
 
 func (list *circulist) All() []interface{} {
@@ -217,6 +218,27 @@ func (list *circulist) CompareInsert(value interface{}, compare func(value, next
 		}
 	}
 	return list.PushBack(value), true
+}
+
+func (list *circulist) CompareRemove(value interface{}, compare func(value, next interface{}) int) bool {
+	for i, node := 0, list.Front(); i < list.length; i, node = i+1, node.Next() {
+		ret := compare(value, node.value)
+		if ret == 0 {
+			return list.Remove(node)
+		}
+	}
+	return false
+}
+
+func (list *circulist) CompareGet(value interface{},
+	compare func(value, next interface{}) int) *Node {
+	for i, node := 0, list.Front(); i < list.length; i, node = i+1, node.Next() {
+		ret := compare(value, node.value)
+		if ret == 0 {
+			return node
+		}
+	}
+	return nil
 }
 
 func (list *circulist) Iterate(cb func(node *Node) bool) {
