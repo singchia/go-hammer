@@ -2,8 +2,9 @@ package set
 
 type Set interface {
 	Add(interface{})
+	Remove(interface{})
 	Clear()
-	Contains()
+	Contains(interface{}) bool
 	IsEmpty() bool
 	ToSlice() []interface{}
 	Size() int
